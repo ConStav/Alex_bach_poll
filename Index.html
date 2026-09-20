@@ -1,1 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Alex's Bachelor Spot Poll</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f0f2f5; padding: 20px; display: flex; justify-content: center; }
+    .card { background: white; max-width: 400px; width: 100%; border-radius: 12px; padding: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+    h2 { color: #1877f2; text-align: center; margin-top: 0; }
+    label { font-weight: bold; display: block; margin-top: 15px; margin-bottom: 5px; }
+    select, button { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #ccc; font-size: 16px; box-sizing: border-box; }
+    button { background-color: #0084ff; color: white; border: none; font-weight: bold; margin-top: 20px; cursor: pointer; }
+    button:hover { background-color: #006bce; }
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+
+<div class="card">
+  <h2>🍺 Alex's Bachelor Poll</h2>
+  <form id="pollForm">
+    <!-- Step 1: Location -->
+    <label for="location">1. Pick Location:</label>
+    <select id="location" onchange="updateBars()">
+      <option value="">-- Select City --</option>
+      <option value="Larnaca">🏖️ Larnaca</option>
+      <option value="Ayia Napa">🍾 Ayia Napa</option>
+    </select>
+
+    <!-- Step 2: Bars (Hidden by default) -->
+    <div id="barContainer" class="hidden">
+      <label for="bar">2. Pick the Bar:</label>
+      <select id="bar">
+        <!-- Dynamically populated -->
+      </select>
+      
+      <button type="submit">Submit Vote</button>
+    </div>
+  </form>
+</div>
+
+<script>
+  const barData = {
+    "Larnaca": [
+      "Lush Beach Bar / Ammos (Mackenzie)",
+      "Savino Rock Bar (Old Town)",
+      "Preserve / Joy Lounge"
+    ],
+    "Ayia Napa": [
+      "Kaliva on the Beach (Beach Club)",
+      "The Bar Strip (Ambassaden / Senior Frogs)",
+      "Pepper Lounge"
+    ]
+  };
+
+  function updateBars() {
+    const locationSelect = document.getElementById("location");
+    const barSelect = document.getElementById("bar");
+    const barContainer = document.getElementById("barContainer");
+    const selectedLocation = locationSelect.value;
+
+    // Reset dropdown options
+    barSelect.innerHTML = "";
+
+    if (selectedLocation && barData[selectedLocation]) {
+      // Add relevant bars
+      barData[selectedLocation].forEach(bar => {
+        const option = document.createElement("option");
+        option.value = bar;
+        option.textContent = bar;
+        barSelect.appendChild(option);
+      });
+      barContainer.classList.remove("hidden");
+    } else {
+      barContainer.classList.add("hidden");
+    }
+  }
+
+  document.getElementById("pollForm").addEventListener("submit", function(e) {
+    e.preventDefault();
+    const city = document.getElementById("location").value;
+    const bar = document.getElementById("bar").value;
+    alert(`Vote Submitted!\nLocation: ${city}\nBar: ${bar}`);
+  });
+</script>
+
+</body>
+</html>
 
