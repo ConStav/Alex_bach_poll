@@ -6,7 +6,7 @@
   <title>Alex's Bachelor Spot Poll</title>
   <style>
     body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f0f2f5; padding: 20px; display: flex; justify-content: center; }
-    .card { background: white; max-width: 400px; width: 100%; border-radius: 12px; padding: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+    .card { background: white; max-width: 420px; width: 100%; border-radius: 12px; padding: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
     h2 { color: #1877f2; text-align: center; margin-top: 0; }
     label { font-weight: bold; display: block; margin-top: 15px; margin-bottom: 5px; }
     select, input[type="text"], button { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #ccc; font-size: 16px; box-sizing: border-box; }
@@ -21,7 +21,7 @@
   <h2>🍺 Alex's Bachelor Poll</h2>
   
   <form action="https://api.web3forms.com/submit" method="POST" id="pollForm">
-    <!-- Web3Forms Access Key Configured -->
+    <!-- Web3Forms Access Key -->
     <input type="hidden" name="access_key" value="18be96e0-e8a2-4ad0-b858-50e73a1a1d96">
     <input type="hidden" name="subject" value="New Bachelor Poll Vote!">
 
@@ -39,7 +39,7 @@
 
     <!-- Step 2: Bars -->
     <div id="barContainer" class="hidden">
-      <label for="bar">2. Pick the Bar:</label>
+      <label for="bar">2. Pick the Bar / Spot:</label>
       <select id="bar" name="bar" required>
         <!-- Dynamically populated -->
       </select>
@@ -54,12 +54,20 @@
     "Larnaca": [
       "Lush Beach Bar / Ammos (Mackenzie)",
       "Savino Rock Bar (Old Town)",
-      "Preserve / Joy Lounge"
+      "Preserve / Joy Lounge",
+      "Blue Pine Bar & Restaurant",
+      "Barrel House Craft Beer Bar",
+      "Cuckoo Rooftop Bar",
+      "Club DEEP (Late Night Dance)"
     ],
     "Ayia Napa": [
-      "Kaliva on the Beach (Beach Club)",
+      "Kaliva on the Beach (Daytime Beach Club)",
       "The Bar Strip (Ambassaden / Senior Frogs)",
-      "Pepper Lounge"
+      "Pepper Lounge Bar",
+      "The Castle Club (Mega Club)",
+      "Black N' White Club (Urban & RnB)",
+      "Carwash Disco (Party Anthems)",
+      "😈 Toga Toga"
     ]
   };
 
@@ -73,13 +81,20 @@
     barSelect.innerHTML = "";
 
     if (selectedLocation && barData[selectedLocation]) {
-      // Add relevant bars
+      // Add default prompt option
+      const defaultOption = document.createElement("option");
+      defaultOption.value = "";
+      defaultOption.textContent = "-- Choose Option --";
+      barSelect.appendChild(defaultOption);
+
+      // Add relevant options
       barData[selectedLocation].forEach(bar => {
         const option = document.createElement("option");
         option.value = bar;
         option.textContent = bar;
         barSelect.appendChild(option);
       });
+      
       barContainer.classList.remove("hidden");
     } else {
       barContainer.classList.add("hidden");
