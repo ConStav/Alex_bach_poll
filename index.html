@@ -9,7 +9,8 @@
     .card { background: white; max-width: 420px; width: 100%; border-radius: 12px; padding: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
     h2 { color: #1877f2; text-align: center; margin-top: 0; }
     label { font-weight: bold; display: block; margin-top: 15px; margin-bottom: 5px; }
-    select, input[type="text"], button { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #ccc; font-size: 16px; box-sizing: border-box; }
+    select, input[type="text"], textarea, button { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #ccc; font-size: 16px; box-sizing: border-box; }
+    textarea { resize: vertical; min-height: 80px; font-family: inherit; }
     button { background-color: #0084ff; color: white; border: none; font-weight: bold; margin-top: 20px; cursor: pointer; }
     button:hover { background-color: #006bce; }
     .hidden { display: none; }
@@ -27,7 +28,7 @@
 
     <!-- Voter Name Field -->
     <label for="voter_name">Your Name:</label>
-    <input type="text" id="voter_name" name="voter_name" placeholder="Enter your name" required>
+    <input type="text" id="voter_name" name="voter_name" placeholder="Enter your full name" required>
 
     <!-- Step 1: Location -->
     <label for="location">1. Pick Location:</label>
@@ -43,6 +44,10 @@
       <select id="bar" name="bar" required>
         <!-- Dynamically populated -->
       </select>
+
+      <!-- Step 3: Additional Details / Comments -->
+      <label for="details">3. Details / Notes (Optional):</label>
+      <textarea id="details" name="details" placeholder="Add time preferences, ideas, or comments..."></textarea>
       
       <button type="submit">Submit Vote</button>
     </div>
