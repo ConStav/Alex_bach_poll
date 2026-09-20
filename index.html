@@ -14,6 +14,8 @@
     button { background-color: #0084ff; color: white; border: none; font-weight: bold; margin-top: 20px; cursor: pointer; }
     button:hover { background-color: #006bce; }
     .hidden { display: none; }
+    .error-msg { color: #e41e3f; font-size: 14px; font-weight: bold; margin-top: 6px; display: none; }
+    input.error { border-color: #e41e3f; background-color: #fce8e6; }
   </style>
 </head>
 <body>
@@ -27,8 +29,9 @@
     <input type="hidden" name="subject" value="New Bachelor Poll Vote!">
 
     <!-- Voter Name Field -->
-    <label for="voter_name">Your Name:</label>
-    <input type="text" id="voter_name" name="voter_name" placeholder="Enter your full name" required>
+    <label for="voter_name">Your Name (First or Last):</label>
+    <input type="text" id="voter_name" name="voter_name" placeholder="First or Last name on Facebook" required>
+    <div id="nameError" class="error-msg">Βάλε το όνομα ή το επίθετο σου όπως είναι στο Facebook ρε κοπέλι!</div>
 
     <!-- Step 1: Location -->
     <label for="location">1. Pick Location:</label>
@@ -55,6 +58,94 @@
 </div>
 
 <script>
+  // List of allowed first names, last names, and full names from the Facebook group list
+  const allowedNames = [
+    // Demonaz Occulta
+    "demonaz", "occulta", "demonaz occulta",
+    // Panayiotis Savva
+    "panayiotis", "savva", "panayiotis savva", "panagiotis",
+    // Savvas K Mallas
+    "savvas", "mallas", "savvas mallas", "savvas k mallas",
+    // Sotos Terentis
+    "sotos", "terentis", "sotos terentis",
+    // John Hunter / Boss
+    "john", "hunter", "john hunter", "boss",
+    // Sotiris Hadjikyriakos
+    "sotiris", "hadjikyriakos", "hadjikyriacos", "sotiris hadjikyriakos",
+    // Yiannos Elia
+    "yiannos", "elia", "yiannos elia", "jiannos",
+    // Yioupis Marios
+    "yioupis", "marios", "marios yioupis", "yioupis marios",
+    // Konstantinos Stavrou (Greek & English variations)
+    "konstantinos", "stavrou", "konstantinos stavrou", "κωνσταντινος", "σταυρου", "κωνσταντίνος στάυρου", "cwstantino"
+  ];
+
+  // Levenshtein distance algorithm for typo tolerance
+  function levenshtein(a, b) {
+    const matrix = [];
+    for (let i = 0; i <= b.length; i++) matrix[i] = [i];
+    for (let j = 0; j <= a.length; j++) matrix[0][j] = j;
+
+    for (let i = 1; i <= b.length; i++) {
+      for (let j = 1; j <= a.length; j++) {
+        if (b.charAt(i - 1) === a.charAt(j - 1)) {
+          matrix[i][j] = matrix[i - 1][j - 1];
+        } else {
+          matrix[i][j] = Math.min(
+            matrix[i - 1][j - 1] + 1,
+            matrix[i][j - 1] + 1,
+            matrix[i - 1][j] + 1
+          );
+        }
+      }
+    }
+    return matrix[b.length][a.length];
+  }
+
+  function validateName(inputVal) {
+    const cleanInput = inputVal.trim().toLowerCase();
+    if (!cleanInput) return false;
+
+    // Check direct match
+    if (allowedNames.includes(cleanInput)) return true;
+
+    // Check if input contains either first or last name
+    const inputWords = cleanInput.split(/\s+/);
+    for (let word of inputWords) {
+      if (allowedNames.includes(word)) return true;
+    }
+
+    // Check with fuzzy typo tolerance (up to 2 character mistakes allowed)
+    for (let allowed of allowedNames) {
+      if (Math.abs(allowed.length - cleanInput.length) <= 2) {
+        if (levenshtein(cleanInput, allowed) <= 2) return true;
+      }
+      for (let word of inputWords) {
+        if (Math.abs(allowed.length - word.length) <= 2) {
+          if (levenshtein(word, allowed) <= 2) return true;
+        }
+      }
+    }
+
+    return false;
+  }
+
+  // Form submission handler
+  document.getElementById("pollForm").addEventListener("submit", function(e) {
+    const nameInput = document.getElementById("voter_name");
+    const errorDiv = document.getElementById("nameError");
+
+    if (!validateName(nameInput.value)) {
+      e.preventDefault();
+      nameInput.classList.add("error");
+      errorDiv.style.display = "block";
+      nameInput.focus();
+    } else {
+      nameInput.classList.remove("error");
+      errorDiv.style.display = "none";
+    }
+  });
+
   const barData = {
     "Larnaca": [
       "Lush Beach Bar / Ammos (Mackenzie)",
@@ -81,17 +172,14 @@
     const barContainer = document.getElementById("barContainer");
     const selectedLocation = locationSelect.value;
 
-    // Reset dropdown options
     barSelect.innerHTML = "";
 
     if (selectedLocation && barData[selectedLocation]) {
-      // Add default prompt option
       const defaultOption = document.createElement("option");
       defaultOption.value = "";
       defaultOption.textContent = "-- Choose Option --";
       barSelect.appendChild(defaultOption);
 
-      // Add relevant options
       barData[selectedLocation].forEach(bar => {
         const option = document.createElement("option");
         option.value = bar;
